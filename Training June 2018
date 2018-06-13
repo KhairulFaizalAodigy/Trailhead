@@ -1,0 +1,11 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="greeting" type="String" default="Singapore" />
+    <div class="slds-card">
+        <div class="slds-card__body slds-card__body_inner slds-p-top_medium">
+            Hello {! v.greeting}  !
+            <input aura:id="myInput" type="text" class="slds-input" />
+            <button name="Update" type="submit" class="slds-button slds-button_brand slds-m-top_small"
+                    onclick="{! c.updateValue}">Update</button>
+        </div>
+    </div>
+</aura:component>
