@@ -1,0 +1,103 @@
+public class M3InsightsCont {
+    @RemoteAction
+    public static String getBrandsData() {
+        String response;
+        
+        String staticURL = GetResourceURL('JSONContent');
+        User currentUser = getCurrentUser();
+        String fileURL = generateStaticResourceURL('Group', currentUser, staticURL, '');
+        
+
+        PageReference jsonFile = new PageReference( fileURL );
+       
+        response = jsonFile.getContent().toString();
+        system.debug(response);
+        return response;
+    }
+    
+    @RemoteAction
+    public static String getSalesData ( String brandId ) {
+    
+        String response;
+        
+        String staticURL = GetResourceURL('JSONContent');
+        User currentUser = getCurrentUser();
+        String fileURL = generateStaticResourceURL('Brands', currentUser, staticURL, brandId);
+
+        PageReference jsonFile = new PageReference( fileURL );
+        response = jsonFile.getContent().toString();
+
+
+        system.debug(response);
+        return response;
+    }
+    
+    /*@RemoteAction
+    public static String getGroupData() {
+    
+        String response;
+        
+        String staticURL = GetResourceURL('JSONContent');
+        User currentUser = getCurrentUser();
+        String fileURL = generateStaticResourceURL('Group', currentUser, staticURL);
+
+        PageReference jsonFile = new PageReference( fileURL );
+        response = jsonFile.getContent().toString();
+
+
+        system.debug(response);
+        return response;
+    }*/
+    
+    private static String generateStaticResourceURL(String typeOFRequest, User currentUser, String staticURL, String brandId){
+        String retURL = '';
+        String prefix = '/content/datasets/groups/';
+        String salesJson = '/sales.json';
+        String groupJson = '/index.json';
+        
+        if(typeOFRequest == 'Group'){
+            
+            //retURL = staticURL + prefix + currentUser.GroupId__c + '/brands/' + currentUser.RetailerId__c + salesJson;
+           retURL = staticURL + prefix + currentUser.GroupId__c + groupJson;
+            
+        }else if (typeOFRequest == 'Brands'){
+            
+            retURL = staticURL + prefix + currentUser.GroupId__c + '/brands/' + brandId + salesJson;  
+                 
+        }/*else if (typeOFRequest == 'Group'){
+        
+            retURL = staticURL + prefix + currentUser.GroupId__c + groupJson;  
+        
+        }*/    
+        
+        system.debug(typeOFRequest + ' ' + retURL);   
+        return retURL;
+    }
+    
+    @RemoteAction
+    public static User getCurrentUser() {
+        User currentUser = [Select Id, Name, GroupId__c, Level__c, RetailerId__c  From User Where Id = :UserInfo.getUserId()];
+        return currentUser;
+    }
+
+    // Pass the resource name
+    private static String GetResourceURL(String resourceName){
+        String resourceURL = '';
+        // Fetching the resource
+        List<StaticResource> resourceList= [SELECT Name, NamespacePrefix, SystemModStamp FROM StaticResource WHERE Name = :resourceName];
+        
+        // Checking if the result is returned or not
+        if(resourceList.size() == 1){
+            
+            // Getting namespace
+            String namespace = resourceList[0].NamespacePrefix;
+            // Resource URL
+            resourceURL = '/resource/' + resourceList[0].SystemModStamp.getTime() + '/' + (namespace != null && namespace != '' ? namespace + '__' : '') + resourceName; 
+        
+        }
+        
+        return resourceURL;
+    }
+
+    
+}
