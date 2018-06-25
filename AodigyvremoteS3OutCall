@@ -1,0 +1,61 @@
+// Aodigy - Joseph on 20th June
+public class VRemoteS3OutCall {
+    
+    @RemoteAction
+    public static String getBrands(){
+        
+        String fakeToken = 'SalesforceSpike2018'; //This has to be repalced with named credential or a better secure mechanism
+        User currentUser = getCurrentUser();
+        String calloutURL = generateURL('Sales', currentUser);
+        
+        HttpRequest newRequest = new HttpRequest();
+        newRequest.setEndpoint(calloutURL);
+        newRequest.setMethod('GET');
+        newRequest.setHeader('Referer', fakeToken);
+        
+        Http http = new Http();
+        HTTPResponse res = http.send(newRequest);
+		System.debug(res.getBody());
+		
+        return res.getBody();
+    }
+
+    @RemoteAction
+    public static String getSales(){
+        String response = '';
+        String fakeToken = 'SalesforceSpike2018'; //This has to be repalced with named credential or a better secure mechanism
+        User currentUser = getCurrentUser();
+        String calloutURL = generateURL('Brands', currentUser);
+        
+        HttpRequest newRequest = new HttpRequest();
+        newRequest.setEndpoint(calloutURL);
+        newRequest.setMethod('GET');
+        newRequest.setHeader('Referer', fakeToken);
+        
+        Http http = new Http();
+        HTTPResponse res = http.send(newRequest);
+		System.debug(res.getBody());
+		
+        return res.getBody();
+    }
+
+    private static String generateURL(String typeOFRequest, User currentUser){
+        String retURL = '';
+        String url = 'https://s3-ap-southeast-2.amazonaws.com/spike.portal.vicinity.com.au.content/'; //This will be stored in custom setting eventually.
+		String groupLink = '/index.json';
+        String retailerLink = '/sales.json';
+
+        if(typeOFRequest == 'Sales'){
+            retURL = url + 'content/datasets/groups/' + currentUser.GroupId__c + '/brands/' + currentUser.RetailerId__c + groupLink;
+        }else if (typeOFRequest == 'Brands'){
+            retURL = url + 'content/datasets/groups/' + currentUser.GroupId__c + '/brands/' + currentUser.RetailerId__c + retailerLink;
+        }     
+        
+        return retURL;
+    }
+    
+    private static User getCurrentUser(){
+        User currentUser = [Select Id, GroupId__c, Level__c, RetailerId__c  From User Where Id = :UserInfo.getUserId()];
+        return currentUser;
+    }
+}
