@@ -1,0 +1,11 @@
+Canvas.EnvironmentContext env = renderContext.getEnvironmentContext();
+
+// Get current custom params
+Map<String, Object> previousParams = 
+    (Map<String, Object>) JSON.deserializeUntyped(env.getParametersAsJSON());
+
+// Add a new custom param
+previousParams.put('newCustomParam','TESTVALUE');
+
+// Now replace the parameters with the current parameters plus our new custom param
+env.setParametersAsJSON(JSON.serialize(previousParams));
