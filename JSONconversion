@@ -1,0 +1,17 @@
+List<sObject> result = 'listOfYourRecords';
+Map<Date,List<Integer>> mapOfDateWtihNumbers = new Map<Date,List<Integer>>();
+
+loop through your records
+
+for(record ....){
+   if(!mapOfDateWtihNumbers.containsKey(record.date)){
+      mapOfDateWtihNumbers.put(record.date,new List<Integer>());
+   }
+   mapOfDateWtihNumbers.get(recoed.date).add(record.Number);
+}
+
+//now you will have a map of Dates as keys and list of numbers as values
+
+//you can use json serialize method to convert it to JSON if require
+
+JSON.serialize(mapOfDateWtihNumbers);
